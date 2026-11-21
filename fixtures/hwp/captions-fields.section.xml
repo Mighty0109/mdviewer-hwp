@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hs:sec xmlns:hs="http://www.hancom.co.kr/hwpml/2011/section" xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph" xmlns:hc="http://www.hancom.co.kr/hwpml/2011/core">
+  <hp:p styleIDRef="1"><hp:run><hp:t>캡션과 필드 회귀 문서</hp:t></hp:run></hp:p>
+  <hp:p><hp:run><hp:tbl rowCnt="1" colCnt="1">
+    <hp:caption><hp:subList><hp:p><hp:run><hp:t>캡션 표 설명</hp:t></hp:run></hp:p></hp:subList></hp:caption>
+    <hp:tr><hp:tc><hp:cellAddr rowAddr="0" colAddr="0"/><hp:cellSpan rowSpan="1" colSpan="1"/>
+      <hp:subList><hp:p><hp:run><hp:t>표 셀 내용</hp:t></hp:run></hp:p></hp:subList>
+    </hp:tc></hp:tr>
+  </hp:tbl></hp:run></hp:p>
+  <hp:p><hp:run><hp:pic><hc:img binaryItemIDRef="imageA"/>
+    <hp:caption><hp:subList><hp:p><hp:run><hp:t>캡션 그림 설명</hp:t></hp:run></hp:p></hp:subList></hp:caption>
+  </hp:pic></hp:run></hp:p>
+  <hp:p><hp:run><hp:ctrl><hp:fieldBegin id="1" type="HYPERLINK"><hp:parameters>
+    <hp:stringParam name="Command">https://example.invalid/metadata</hp:stringParam>
+  </hp:parameters></hp:fieldBegin></hp:ctrl><hp:t>필드 표시 글</hp:t><hp:ctrl><hp:fieldEnd beginIDRef="1"/></hp:ctrl></hp:run></hp:p>
+</hs:sec>

@@ -1,0 +1,13 @@
+{
+  "warningCodes": ["object-skipped"],
+  "bodyCounts": {
+    "캡션과 필드 회귀 문서": 1,
+    "캡션 표 설명": 1,
+    "캡션 그림 설명": 1,
+    "표 셀 내용": 1,
+    "필드 표시 글": 1,
+    "캡션 배치 제외: 텍스트만 가져옴": 2,
+    "필드 정보 제외: 표시 글만 가져옴": 1
+  },
+  "excludedText": ["https://example.invalid/metadata"]
+}

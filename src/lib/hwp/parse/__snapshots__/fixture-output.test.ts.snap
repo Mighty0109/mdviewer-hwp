@@ -1,0 +1,169 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`keeps the existing hwp fixture bytes and import output unchanged 1`] = `
+{
+  "assets": [
+    {
+      "mimeType": "image/png",
+      "name": "img-001.png",
+      "sha256": "67144b49dffbbb9ee39632b3d5b4ca8754f7272b32385c55c757da16fd9c249c",
+    },
+  ],
+  "markdown": "숨긴 머리글
+
+## 합성 제목
+
+일반 문단 & 한글 😀
+
+1. 번호 항목
+
+  - 글머리 항목
+
+| 셀 1\\-1 | 셀 1\\-2 |
+| --- | --- |
+| 셀 2\\-1 | 셀 2\\-2 |
+
+![이미지 1](mdviewer-import-assets/img-001.png)
+
+\\[각주/미주 제외\\]
+
+\\[각주/미주 제외\\]
+
+\\[글상자 텍스트만 가져옴\\]
+
+글상자 내용
+
+<table>
+<tr><td rowspan="1" colspan="2">셀 1-1</td></tr>
+<tr><td rowspan="1" colspan="1">셀 2-1</td><td rowspan="1" colspan="1">셀 2-2</td></tr>
+</table>
+
+\\[수식 제외\\]
+
+\\[도형 제외\\]
+
+\\[개체 제외\\]
+
+숨긴 꼬리글",
+  "sourceSha256": "ecb440c95e54fd5222ad9c68670bc55a5395c77ad1ad90714aa06b55b310985b",
+  "stats": {
+    "headings": 1,
+    "imageMappings": 1,
+    "imageReferences": 1,
+    "images": 1,
+    "paragraphs": 19,
+    "skippedImages": 0,
+    "tables": 2,
+  },
+  "warnings": [
+    {
+      "code": "footnote-skipped",
+      "count": 2,
+    },
+    {
+      "code": "textbox-text-only",
+      "count": 1,
+    },
+    {
+      "code": "equation-skipped",
+      "count": 1,
+    },
+    {
+      "code": "shape-skipped",
+      "count": 1,
+    },
+    {
+      "code": "object-skipped",
+      "count": 1,
+    },
+    {
+      "code": "table-raw-html",
+      "count": 1,
+    },
+  ],
+}
+`;
+
+exports[`keeps the existing hwpx fixture bytes and import output unchanged 1`] = `
+{
+  "assets": [
+    {
+      "mimeType": "image/png",
+      "name": "img-001.png",
+      "sha256": "67144b49dffbbb9ee39632b3d5b4ca8754f7272b32385c55c757da16fd9c249c",
+    },
+  ],
+  "markdown": "숨긴 내용
+
+## 합성 제목
+
+일반 문단 & 한글 😀
+
+1. 번호 항목
+
+  - 글머리 항목
+
+| 셀 1\\-1 | 셀 1\\-2 |
+| --- | --- |
+| 셀 2\\-1 | 셀 2\\-2 |
+
+![이미지 1](mdviewer-import-assets/img-001.png)
+
+\\[각주/미주 제외\\]
+
+\\[각주/미주 제외\\]
+
+\\[글상자 텍스트만 가져옴\\]
+
+글상자 내용
+
+<table>
+<tr><td rowspan="1" colspan="2">셀 1-1</td></tr>
+<tr><td rowspan="1" colspan="1">셀 2-1</td><td rowspan="1" colspan="1">셀 2-2</td></tr>
+</table>
+
+\\[수식 제외\\]
+
+\\[도형 제외\\]
+
+\\[개체 제외\\]
+
+숨긴 내용",
+  "sourceSha256": "f04d60efc7a970c3f18f11b6ce6682fb207cad71137df85483943bb8c9044809",
+  "stats": {
+    "headings": 1,
+    "imageMappings": 1,
+    "imageReferences": 1,
+    "images": 1,
+    "paragraphs": 19,
+    "skippedImages": 0,
+    "tables": 2,
+  },
+  "warnings": [
+    {
+      "code": "footnote-skipped",
+      "count": 2,
+    },
+    {
+      "code": "textbox-text-only",
+      "count": 1,
+    },
+    {
+      "code": "equation-skipped",
+      "count": 1,
+    },
+    {
+      "code": "shape-skipped",
+      "count": 1,
+    },
+    {
+      "code": "object-skipped",
+      "count": 1,
+    },
+    {
+      "code": "table-raw-html",
+      "count": 1,
+    },
+  ],
+}
+`;

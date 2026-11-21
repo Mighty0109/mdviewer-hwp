@@ -1,0 +1,34 @@
+// @vitest-environment jsdom
+import { act } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
+import { beforeEach, afterEach, it, expect, vi } from 'vitest';
+import Home from './page';
+import { fileBridge, reportE2eState } from '@/data/tauri-bridge';
+import { useUIStore } from '@/stores/ui-store';
+const fakes = vi.hoisted(() => ({ adapter: { open: vi.fn() }, document: { pageCount: 2, renderPage: vi.fn(), dispose: vi.fn() }, worker: { parse: vi.fn(), generate: vi.fn(), dispose: vi.fn() } }));
+vi.mock('@/lib/hwp/rhwp', () => ({ createRhwpAdapter: () => fakes.adapter }));
+vi.mock('@/lib/hwp/worker-client', () => ({ createHwpWorkerClient: () => fakes.worker }));
+vi.mock('@/data/tauri-bridge', () => ({ fileBridge: { available: () => true, onOpened: vi.fn(), onChanged: vi.fn(), takePending: vi.fn(), read: vi.fn(), watch: vi.fn(), unwatch: vi.fn(), pick: vi.fn(), e2eConfig: vi.fn(), onCloseBlocked: vi.fn(), setDocumentDirty: vi.fn(), readHwpBytes: vi.fn() }, localImageUrl: (path: string) => `asset://localhost${encodeURI(path)}`, reportE2eState: vi.fn() }));
+vi.mock('@/lib/markdown', async (importOriginal) => { const markdown = await importOriginal<typeof import('@/lib/markdown')>(); return { ...markdown, markdownToHtmlAsync: async (source: string) => markdown.markdownToHtml(source) }; });
+Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+let host: HTMLDivElement; let root: Root;
+beforeEach(() => {
+  vi.useFakeTimers(); vi.clearAllMocks();
+  useUIStore.persist.setOptions({ storage: { getItem: () => null, setItem: () => {}, removeItem: () => {} } }); useUIStore.setState({ viewMode: 'wysiwyg', tocOpen: true });
+  fakes.adapter.open.mockResolvedValue(fakes.document); fakes.document.renderPage.mockResolvedValue(new Blob(['page'], { type: 'image/svg+xml' }));
+  fakes.worker.parse.mockResolvedValue({ markdown: '# 가져온 문서\n\n내용', warnings: [], assets: [], stats: { headings: 1, paragraphs: 1, tables: 0, images: 0, imageReferences: 0, imageMappings: 0, skippedImages: 0 } });
+  vi.mocked(fileBridge.readHwpBytes).mockResolvedValue(Uint8Array.of(1, 2, 3));
+  vi.stubGlobal('URL', class extends URL { static createObjectURL = vi.fn(() => 'blob:original'); static revokeObjectURL = vi.fn(); });
+  vi.mocked(fileBridge.onOpened).mockResolvedValue(() => {}); vi.mocked(fileBridge.onChanged).mockResolvedValue(() => {}); vi.mocked(fileBridge.onCloseBlocked).mockResolvedValue(() => {}); vi.mocked(fileBridge.setDocumentDirty).mockResolvedValue(); vi.mocked(fileBridge.takePending).mockResolvedValue([]); vi.mocked(fileBridge.watch).mockResolvedValue(); vi.mocked(fileBridge.unwatch).mockResolvedValue(); vi.mocked(fileBridge.e2eConfig).mockResolvedValue({ statePath: '/tmp/state.json', query: '', importPath: '/tmp/document.hwp' }); vi.mocked(reportE2eState).mockResolvedValue();
+  host = document.createElement('div'); document.body.append(host); root = createRoot(host);
+});
+afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.useRealTimers(); vi.unstubAllGlobals(); useUIStore.setState({ viewMode: 'wysiwyg', tocOpen: true }); });
+const settle = async () => { await act(async () => { await vi.advanceTimersByTimeAsync(100); }); };
+const render = async () => { await act(async () => root.render(<Home />)); await settle(); await settle(); };
+const buttons = () => [...host.querySelectorAll<HTMLButtonElement>('[aria-label="편집 보기"] button')];
+const click = async (label: string) => { await act(async () => buttons().find(b => b.textContent === label)!.click()); await settle(); };
+it('[orig-mode] opens the imported snapshot read-only without persisting the mode', async () => { await render(); expect(buttons().map(b => b.textContent)).toEqual(['원본 모양', '소스', '분할']); expect(buttons()[0].getAttribute('aria-pressed')).toBe('true'); expect(host.querySelectorAll('[data-original-view] img')).toHaveLength(1); expect(host.querySelector('textarea')).toBeNull(); expect(host.querySelector('[data-statusbar]')?.textContent).toContain('원본 모양 · 읽기 전용'); expect(fakes.adapter.open).toHaveBeenCalledTimes(1); expect(useUIStore.getState().viewMode).toBe('wysiwyg'); });
+it('[orig-mode] retains edits through original and split without reopening', async () => { await render(); await click('소스'); const area = host.querySelector('textarea')!; expect(area.value).toContain('가져온 문서'); await act(async () => { Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')!.set!.call(area, '고친 내용'); area.dispatchEvent(new Event('input', { bubbles: true })); }); await click('원본 모양'); expect(host.querySelector('[data-original-view] img')).toBeTruthy(); await click('분할'); expect(host.querySelector('textarea')?.value).toBe('고친 내용'); expect(host.querySelector('[data-original-view]')).toBeTruthy(); expect(fakes.adapter.open).toHaveBeenCalledTimes(1); });
+it('[orig-mode] exits to source with Escape', async () => { await render(); await act(async () => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))); expect(host.querySelector('textarea')).toBeTruthy(); });
+it('[orig-mode] reports automatic rendering failures in source', async () => { fakes.adapter.open.mockRejectedValue(new Error('손상')); await render(); expect(host.querySelector('textarea')).toBeTruthy(); expect(host.querySelector('[role="alert"]')?.textContent).toContain('원본 모양을 표시하지 못했습니다. 손상'); });
+it('[orig-mode] keeps the block editor for Markdown', async () => { vi.mocked(fileBridge.e2eConfig).mockResolvedValue(null); vi.mocked(fileBridge.takePending).mockResolvedValue(['/tmp/a.md']); vi.mocked(fileBridge.read).mockResolvedValue({ path: '/tmp/a.md', content: '# 문서', hash: 'h', mtimeMs: 1 }); await render(); expect(buttons().map(b => b.textContent)).toEqual(['블록', '소스', '분할']); expect(host.querySelector('.tiptap')).toBeTruthy(); expect(host.querySelector('[data-original-view]')).toBeNull(); });
